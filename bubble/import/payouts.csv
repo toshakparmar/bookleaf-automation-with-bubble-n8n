@@ -1,0 +1,13 @@
+author_code,book_code,amount,payout_date,is_cumulative,notes
+AUTH001,BK001,8400,2025-10-15,yes,"Total paid to date (last payout on 2025-10-15)"
+AUTH001,BK002,7938,2025-12-01,yes,"Total paid to date (last payout on 2025-12-01)"
+AUTH002,BK003,21000,2025-09-01,yes,"Total paid to date (last payout on 2025-09-01)"
+AUTH002,BK004,50000,2025-11-15,yes,"Total paid to date (last payout on 2025-11-15)"
+AUTH004,BK006,10000,2025-08-20,yes,"Total paid to date (last payout on 2025-08-20)"
+AUTH004,BK007,1845,2025-12-01,yes,"Total paid to date (last payout on 2025-12-01)"
+AUTH005,BK008,14240,2025-12-01,yes,"Total paid to date (last payout on 2025-12-01)"
+AUTH005,BK009,8000,2025-10-15,yes,"Total paid to date (last payout on 2025-10-15)"
+AUTH007,BK011,35000,2025-11-15,yes,"Total paid to date (last payout on 2025-11-15)"
+AUTH007,BK012,18000,2025-10-15,yes,"Total paid to date (last payout on 2025-10-15)"
+AUTH008,BK014,3120,2025-12-01,yes,"Total paid to date (last payout on 2025-12-01)"
+AUTH010,BK017,25000,2025-11-15,yes,"Total paid to date (last payout on 2025-11-15)"

@@ -1,0 +1,27 @@
+services:
+  # ==========================================================================
+  # BookLeaf Assignment 2: n8n Automation Backend on Render
+  # ==========================================================================
+  - type: web
+    name: bookleaf-n8n
+    env: docker
+    dockerfilePath: n8n/Dockerfile
+    plan: free
+    region: frankfurt
+    envVars:
+      - key: N8N_PORT
+        value: 5678
+      - key: PORT
+        value: 5678
+      - key: N8N_PROTOCOL
+        value: https
+      - key: WEBHOOK_URL
+        sync: false # Set to https://bookleaf-n8n.onrender.com/
+      - key: N8N_BASIC_AUTH_ACTIVE
+        value: false
+      - key: GENERIC_TIMEZONE
+        value: Asia/Kolkata
+      - key: EXECUTIONS_DATA_PRUNE
+        value: true
+      - key: EXECUTIONS_DATA_MAX_AGE
+        value: 168

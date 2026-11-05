@@ -1,0 +1,20 @@
+{
+  "name": "bookleaf-assignment-2",
+  "version": "1.0.0",
+  "description": "BookLeaf Publishing - Author Royalty Dashboard & Automated Notification System (Bubble.io + n8n + AI)",
+  "private": true,
+  "scripts": {
+    "test": "node --test logic/royalty-engine.test.js && node scripts/test-harness.mjs",
+    "test:royalty": "node --test logic/royalty-engine.test.js",
+    "test:harness": "node scripts/test-harness.mjs",
+    "seed:bubble": "node scripts/seed-bubble.mjs",
+    "seed:bubble:dry": "node scripts/seed-bubble.mjs --dry-run",
+    "generate:samples": "node scripts/generate-samples.mjs",
+    "generate:csvs": "node scripts/generate-csvs.mjs",
+    "build:n8n": "node scripts/build-n8n-workflow.mjs"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}

@@ -1,0 +1,2 @@
+as_of_date,overdue_days,min_payout,apply_min_threshold,n8n_timeout_seconds
+2025-12-15,90,1000,yes,180

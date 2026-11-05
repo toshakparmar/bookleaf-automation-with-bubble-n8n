@@ -1,0 +1,62 @@
+{
+  "name": "BookLeaf Error Handler Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 🚨 Global Error Handler\nCatches unhandled errors across workflows and alerts the team via log/notification.",
+        "height": 200,
+        "width": 320,
+        "color": 7
+      },
+      "id": "sticky-err",
+      "name": "Error Handler Legend",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "node-error-trigger",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        120,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst execution = $json.execution || {};\nconst workflow = $json.workflow || {};\nconsole.error('[CRITICAL] Unhandled workflow error caught in ' + workflow.name + ' (Execution ID: ' + execution.id + ')');\nconsole.error('Error Details:', JSON.stringify($json, null, 2));\nreturn {\n  json: {\n    workflowName: workflow.name,\n    executionId: execution.id,\n    errorMessage: execution.error ? execution.error.message : 'Unknown error',\n    timestamp: new Date().toISOString()\n  }\n};\n"
+      },
+      "id": "node-log-error",
+      "name": "Log Critical Error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        360,
+        200
+      ]
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Log Critical Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": true
+}

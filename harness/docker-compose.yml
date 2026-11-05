@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  mock-bubble:
+    build:
+      context: ..
+      dockerfile: harness/Dockerfile.mock
+    container_name: bookleaf-mock-bubble
+    ports:
+      - "3001:3001"
+    environment:
+      - MOCK_BUBBLE_PORT=3001
+
+  mock-llm:
+    build:
+      context: ..
+      dockerfile: harness/Dockerfile.mock
+    command: ["node", "harness/mock-llm.mjs"]
+    container_name: bookleaf-mock-llm
+    ports:
+      - "3002:3002"
+    environment:
+      - MOCK_LLM_PORT=3002
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: bookleaf-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=false
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+      - BUBBLE_BASE_URL=http://mock-bubble:3001/version-test/api/1.1
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ../n8n:/workflows:ro
+    depends_on:
+      - mock-bubble
+      - mock-llm
+
+volumes:
+  n8n_data:
