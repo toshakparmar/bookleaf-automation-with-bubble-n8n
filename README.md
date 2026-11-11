@@ -1,7 +1,11 @@
 # BookLeaf Publishing — Technical Assignment 2: Author Royalty Dashboard & Automated Notification System
 
-> **Platform**: Bubble.io + n8n Automation Engine + AI LLM API (OpenAI / Anthropic / Gemini)  
+> **Platform**: Bubble.io + n8n Automation Engine + Google Gemini 3.1 Flash-Lite / OpenAI / Anthropic  
 > **Candidate**: Toshak Parmar | **Reviewer**: Musavir (`musavir@bookleafpub.in`)  
+> **Repository**: [github.com/toshakparmar/bookleaf-automation-with-bubble-n8n](https://github.com/toshakparmar/bookleaf-automation-with-bubble-n8n)  
+> **Live Bubble Application**: [bookleaf-author-portal-40243.bubbleapps.io/version-test](https://bookleaf-author-portal-40243.bubbleapps.io/version-test)  
+> **Bubble Editor Access**: [bubble.io/page?id=bookleaf-author-portal-40243](https://bubble.io/page?id=bookleaf-author-portal-40243&tab=Design&name=index)  
+> **Live n8n Cloud Webhook**: `https://arnav-bookleaf.app.n8n.cloud/webhook/royalty-summary`  
 > **Confidential Assignment**: Private submission for BookLeaf Full-Stack Developer recruitment.
 
 ---
@@ -224,14 +228,29 @@ The workflow contains a `CALLBACK_MODE` setting in its `Configuration` node:
 
 ---
 
-## 8. Test Login Credentials
+## 8. Test Login Credentials & Live Verified Deployment
 
-| Role | Persona | Email | Password | What to Verify |
-|---|---|---|---|---|
-| **Author** | Priya Sharma (`AUTH001`) | `priya.sharma@email.com` | `Priya@BookLeaf2026` | 2 published books, ₹3,570 pending within normal cycle |
-| **Author** | Rohit Kapoor (`AUTH002`) | `rohit.kapoor@email.com` | `Rohit@BookLeaf2026` | 2 published books, ₹13,024 pending, Overdue status |
-| **Author** | Farhan Sheikh (`AUTH008`) | `farhan.sheikh@email.com` | `Farhan@BookLeaf2026` | 1 published book, ₹0 pending (fully settled) |
-| **Admin** | Operations Admin | `admin@bookleafpub.in` | `Admin@BookLeaf2026` | Full catalog, filters, single trigger, bulk trigger, audit logs |
+### Live Application Links
+- **Live Bubble Application**: `https://bookleaf-author-portal-40243.bubbleapps.io/version-test`
+- **Bubble Editor Link (Read-Only Public Access)**: `https://bubble.io/page?id=bookleaf-author-portal-40243&tab=Design&name=index`
+- **n8n Cloud Automation Engine**: `https://arnav-bookleaf.app.n8n.cloud`
+- **Live n8n Webhook Endpoint**: `https://arnav-bookleaf.app.n8n.cloud/webhook/royalty-summary`
+
+### Verified Test Personas in Bubble Database
+| Role | Persona | Email | City | Pending Royalty | Dynamic Badge | What to Verify |
+|---|---|---|---|---|---|---|
+| **Author** | Priya Sharma (`AUTH001`) | `priya.sharma@gmail.com` | Mumbai | ₹3,570 | 🟡 **Pending** | 2 books (*Whispers of the Ganges*, *The Saffron Diaries*), ₹3,570 within cycle |
+| **Author** | Rohit Kapoor (`AUTH002`) | `rohit.kappor@email.com` | Delhi | ₹13,024 | 🔴 **Overdue** | 2 books (*Code & Karma*, *Startup Sutra*), ₹13,024 overdue past 90 days |
+| **Author** | Farhan Sheikh (`AUTH008`) | `farhan.sheikh@email.com` | Lucknow | ₹0 | 🟢 **Fully paid** | 1 book, ₹0 pending (fully settled) |
+| **Admin** | Operations Admin | `admin@bookleafpub.in` | All | — | — | Author directory, search, single trigger button, dynamic modal popup |
+
+### Live Execution Flow
+1. Open the **Live Bubble Application** (`https://bookleaf-author-portal-40243.bubbleapps.io/version-test`).
+2. Search or browse the **Author Directory** — note the real-time badges (🟡 Pending, 🔴 Overdue, 🟢 Fully paid).
+3. Click **"Trigger Summary."** on Priya Sharma's row.
+4. Bubble synchronously calls the n8n Cloud webhook (`X-BookLeaf-Key` authenticated).
+5. n8n invokes Google Gemini (`gemini-3.1-flash-lite`), validates zero hallucinations, and returns structured email JSON.
+6. Bubble immediately renders the dynamic **Email Preview Modal** with the fact-checked letter and a functional close button `[X]`.
 
 ---
 

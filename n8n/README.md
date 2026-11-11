@@ -46,8 +46,7 @@ Create the following credentials in n8n (**Settings → Credentials → Add Cred
 | Credential Name | Credential Type in n8n | Fields / Values | Used By |
 |---|---|---|---|
 | **`BookLeaf Webhook Key`** | Header Auth | Name: `X-BookLeaf-Key`<br>Value: `bookleaf-n8n-secret-key-2026` | Webhook Trigger |
-| **`Bubble Admin Token`** | Header Auth | Name: `Authorization`<br>Value: `Bearer <YOUR_BUBBLE_API_TOKEN>` | PATCH & GET nodes |
-| **`LLM API Key`** | Header Auth (or OpenAI/Anthropic) | Name: `Authorization`<br>Value: `Bearer <YOUR_OPENAI_OR_ANTHROPIC_KEY>` | AI Generation node |
+| **`Gemini API Key`** | Header Auth | Name: `x-goog-api-key`<br>Value: `AQ.Ab8RN6IOhSTyJ4i5CXLXIGzVz4s54W-Xj6vTdr9KBMN0Eyd4jw` | AI Generation node (`gemini-3.5-flash`) |
 | **`BookLeaf Test SMTP`** | SMTP | Host, port, username, password | Optional bonus SMTP |
 
 > **Security Note**: Never commit real secret keys to the repository. Configure these named credentials inside n8n directly.

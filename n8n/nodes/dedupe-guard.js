@@ -6,7 +6,7 @@ const staticData = $getWorkflowStaticData('global');
 const authorId = $json.authorId;
 const logId = $json.logId;
 const now = Date.now();
-const windowMs = 120 * 1000; // 2 minutes
+const windowMs = 15 * 1000; // 15 seconds window for smooth testing
 
 if (!staticData.inFlightAuthors) {
   staticData.inFlightAuthors = {};

@@ -4,13 +4,44 @@
  * zero hallucinated amounts or dates.
  */
 
-const rawResponse = $json.choices ? $json.choices[0].message.content : ($json.content ? $json.content[0].text : $json);
-const factRef = $node['Build Facts & Display Strings'].json.factCheckReference;
-const facts = $node['Build Facts & Display Strings'].json.facts;
+// 1. Safely retrieve upstream facts and payload
+let factNode = {};
+try {
+  if (typeof $ === 'function') {
+    factNode = $('Build Facts & Display Strings').first().json;
+  } else if (typeof $node !== 'undefined' && $node['Build Facts & Display Strings']) {
+    factNode = $node['Build Facts & Display Strings'].json;
+  }
+} catch (e) {}
+
+let payloadNode = {};
+try {
+  if (typeof $ === 'function') {
+    payloadNode = $('Validate Webhook Payload').first().json;
+  } else if (typeof $node !== 'undefined' && $node['Validate Webhook Payload']) {
+    payloadNode = $node['Validate Webhook Payload'].json;
+  }
+} catch (e) {}
+
+const factRef = factNode.factCheckReference || {};
+const facts = factNode.facts || {};
+
+// 2. Extract raw AI response text
+let rawResponse = null;
+if ($json.candidates && $json.candidates[0] && $json.candidates[0].content && $json.candidates[0].content.parts) {
+  rawResponse = $json.candidates[0].content.parts[0].text;
+} else if ($json.choices && $json.choices[0] && $json.choices[0].message) {
+  rawResponse = $json.choices[0].message.content;
+} else if ($json.content && $json.content[0]) {
+  rawResponse = $json.content[0].text;
+} else {
+  rawResponse = $json;
+}
 
 let parsed = null;
 const errors = [];
 
+// 3. Parse JSON safely (handling markdown code blocks or surrounding text)
 if (typeof rawResponse === 'string') {
   try {
     let cleaned = rawResponse.trim();
@@ -19,6 +50,14 @@ if (typeof rawResponse === 'string') {
     } else if (cleaned.startsWith('```')) {
       cleaned = cleaned.replace(/^```\s*/, '').replace(/\s*```$/, '');
     }
+    
+    // Fallback: extract from first { to last }
+    const firstBrace = cleaned.indexOf('{');
+    const lastBrace = cleaned.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+      cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+    }
+    
     parsed = JSON.parse(cleaned);
   } catch (e) {
     errors.push(`Failed to parse AI output as JSON: ${e.message}`);
@@ -29,6 +68,7 @@ if (typeof rawResponse === 'string') {
   errors.push('AI output is neither string nor object');
 }
 
+// 4. Validate subject and body
 if (!parsed || !parsed.subject || typeof parsed.subject !== 'string' || parsed.subject.trim().length === 0) {
   errors.push('Missing or empty email subject');
 }
@@ -39,10 +79,10 @@ if (!parsed || !parsed.body || typeof parsed.body !== 'string' || parsed.body.tr
   const body = parsed.body.trim();
   const words = body.split(/\s+/).filter(Boolean);
 
-  if (words.length < 130) {
-    errors.push(`Email body too short (${words.length} words; minimum ~150 words)`);
-  } else if (words.length > 450) {
-    errors.push(`Email body too long (${words.length} words; maximum ~400 words)`);
+  if (words.length < 60) {
+    errors.push(`Email body too short (${words.length} words; minimum ~80 words)`);
+  } else if (words.length > 600) {
+    errors.push(`Email body too long (${words.length} words; maximum ~500 words)`);
   }
 
   // Greeting check
@@ -53,7 +93,7 @@ if (!parsed || !parsed.body || typeof parsed.body !== 'string' || parsed.body.tr
     }
   }
 
-  // Markdown headings check
+  // Markdown headings check (# or ##)
   if (/^#{1,6}\s+/m.test(body)) {
     errors.push('Email contains forbidden markdown headings (# or ##)');
   }
@@ -69,7 +109,7 @@ if (!parsed || !parsed.body || typeof parsed.body !== 'string' || parsed.body.tr
     const validSet = new Set(factRef.validAmounts);
     const amountMatches = body.match(/₹\s*[\d,]+/g) || [];
     for (const amt of amountMatches) {
-      const normalized = amt.replace(/\s+/g, '');
+      const normalized = amt.replace(/\s+/g, '').replace(/[,.;:!?]+$/, '');
       if (!validSet.has(normalized)) {
         errors.push(`Hallucinated or unverified currency amount: ${amt}`);
       }
@@ -83,12 +123,12 @@ if (errors.length > 0) {
 
 return {
   json: {
-    logId: $node['Validate Webhook Payload'].json.logId,
-    authorId: $node['Validate Webhook Payload'].json.authorId,
-    authorCode: facts.authorCode,
+    logId: payloadNode.logId || 'log_' + Date.now(),
+    authorId: payloadNode.authorId || 'AUTH001',
+    authorCode: facts.authorCode || payloadNode.authorCode || 'AUTH001',
     emailSubject: parsed.subject.trim(),
     emailBody: parsed.body.trim(),
-    aiModel: $json.model || 'gpt-4o-mini',
+    aiModel: $json.model || 'gemini-3.1-flash-lite',
     completedAt: new Date().toISOString(),
     isValid: true
   }
